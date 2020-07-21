@@ -16,6 +16,8 @@ public class LPAMapper extends Mapper<Text, Text, Text, Text> {
     @Override
     protected void map(Text key, Text value, Context context)
             throws IOException, InterruptedException {
+        // 对每条记录，增加RECORD_COUNTER计数器的值1
+        context.getCounter("STATE", "RECORD_COUNTER").increment(1);
         // 先按第一个逗号切分value，取得tag和其后的逆邻接表结构
         String[] valueSplits = value.toString().split(",", 2);
         String tag = valueSplits[0];
@@ -31,7 +33,6 @@ public class LPAMapper extends Mapper<Text, Text, Text, Text> {
             context.write(outputKeyText, outputValueText);
         }
         // 输出逆邻接表结构
-        outputValueText.set(inverseList);
-        context.write(key, outputValueText);
+        context.write(key, value);
     }
 }

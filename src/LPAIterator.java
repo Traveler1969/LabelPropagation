@@ -1,12 +1,15 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class LPAIterator {
+    private static boolean finish = false;
+
     public static void main(String[] args) throws Exception {
         // 创建作业，设置作业的基本信息，并将KeyValueTextInputFormat的分隔符设置为空格，
         // 将TextOutputFormat的分隔符也设置为空格
@@ -34,5 +37,16 @@ public class LPAIterator {
         job.setInputFormatClass(KeyValueTextInputFormat.class);
         // 提交作业，等待执行完成
         job.waitForCompletion(true);
+        // 检查RECORD_COUNTER和UPDATE_COUNTER的计数，判断是否满足迭代终止条件
+        Counters counters = job.getCounters();
+        long recordCount = counters.findCounter("STATE", "RECORD_COUNTER").getValue();
+        long updateCount = counters.findCounter("STATE", "UPDATE_COUNTER").getValue();
+        if((double)updateCount / recordCount <= 0.005) {
+            finish = true;
+        }
+    }
+
+    public static boolean termConditionMet() {
+        return finish;
     }
 }

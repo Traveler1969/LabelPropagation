@@ -14,12 +14,16 @@ public class LPAReducer extends Reducer<Text,Text,Text,Text>{
         Map<Integer, Double> graph= new HashMap<>();
         StringBuilder result = new StringBuilder();
         Double weight;
-        Integer tag,targettag=0;
+        Integer tag,targettag=0,formerTag=0;
         for (Text val:values)
         {
             String temp=val.toString();
-            if(temp.startsWith("["))
-                result.append(temp);
+            if(temp.endsWith("]")) {
+                // 按第一个逗号切分temp，获得原tag和逆邻接表
+                String[] tempSplits = temp.split(",", 2);
+                formerTag = Integer.parseInt(tempSplits[0]);
+                result.append(tempSplits[1]);
+            }
             else
             {
                 tag=Integer.parseInt(temp.split(",")[0]);
@@ -49,5 +53,9 @@ public class LPAReducer extends Reducer<Text,Text,Text,Text>{
         Integer chosenTag = list.get(random).getKey();
         result.insert( 0 , chosenTag.toString()+",");
         context.write(key,new Text(result.toString()));
+        // 如果更新后的tag与原tag不同，增加UPDATE_COUNTER的值1
+        if(chosenTag.intValue() != formerTag) {
+            context.getCounter("STATE", "UPDATE_COUNTER").increment(1);
+        }
     }
 }
