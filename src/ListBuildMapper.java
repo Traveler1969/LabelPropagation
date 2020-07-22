@@ -5,8 +5,8 @@ import java.io.IOException;
 
 /**
  * ListBuildMapper对于任务3的一行输入，比如狄云 [戚芳,0.333333|戚长发,0.333333|卜垣,0.333333]，
- * 将它转化为如下的几个键值对输出：<戚芳,狄云,0.333333>，<戚长发,狄云,0.333333>，<卜垣,狄云,0.333333>，
- * 其中第一个逗号之前为键，第一个逗号之后为值
+ * 将它转化为如下的几个键值对输出：<Key:戚芳,Value:狄云,0.333333>，<Key:戚长发,Value:狄云,0.333333>，
+ * <Key:卜垣,Value:狄云,0.333333>，
  */
 public class ListBuildMapper
         extends Mapper<Text, Text, Text, Text> {
