@@ -26,6 +26,12 @@ public class NovelCountMapper
     @Override
     protected void setup(Context context)
             throws IOException, InterruptedException {
+        // 每个Mapper实例会处理一个FileSplit，在setup中可以获取小说名
+        String fileName = ((FileSplit)context.getInputSplit()).getPath().getName();
+        novelName = fileName.split("\\.txt|\\.TXT")[0];
+        if(!novelName.startsWith("金庸")) {
+            return;
+        }
         // 打开拼接后的按标签分类的人名文件，建立从人名到标签的映射
         if(context.getCacheFiles() != null && context.getCacheFiles().length != 0) {
             File concatenatedFile = new File("./concatenatedFile");
@@ -40,14 +46,14 @@ public class NovelCountMapper
             }
             br.close();
         }
-        // 每个Mapper实例会处理一个FileSplit，在setup中可以获取小说名
-        String fileName = ((FileSplit)context.getInputSplit()).getPath().getName();
-        novelName = fileName.split("\\.txt|\\.TXT")[0];
     }
 
     @Override
     protected void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
+        if(!novelName.startsWith("金庸")) {
+            return;
+        }
         String[] wordArray = value.toString().split("\\s");
         for(String word : wordArray) {
             Integer tag = nameTagMap.get(word);

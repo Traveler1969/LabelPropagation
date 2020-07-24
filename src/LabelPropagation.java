@@ -43,7 +43,14 @@ public class LabelPropagation {
         String[] labelNovelCounterInput = {args[2], args[1] + "/concatenatedFile",
                 args[1] + "/labelToNovel"};
         LabelNovelCounter.main(labelNovelCounterInput);
-        // 删除最终迭代的输出文件
+        // 删除临时文件"concatenatedFile"
+        hdfs.delete(new Path(args[1] + "/concatenatedFile"), true);
+        // 调用NovelViewer.main()方法，将人名按作品名分类输出
+        String[] novelViewerInput = {args[1] + "/sortByLabel", args[1] + "/labelToNovel",
+                args[1] + "/sortByNovel"};
+        NovelViewer.main(novelViewerInput);
+        // 删除最终迭代的输出文件，以及中间结果labelToNovel
+        hdfs.delete(new Path(args[1] + "/labelToNovel"), true);
         hdfs.delete(new Path(args[1] + "/iteration_" + numIterations), true);
         // 计算总用时，在Driver端的终端输出总用时和迭代次数
         long endTime = System.currentTimeMillis();
