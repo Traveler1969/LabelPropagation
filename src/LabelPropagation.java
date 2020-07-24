@@ -7,6 +7,7 @@ public class LabelPropagation {
     /**
      * LabelPropagation.main()需要的命令行参数：args[0]为输入目录，即任务3的输出所在目录
      * args[1]为输出目录，在迭代过程中产生的多个输出目录将作为它的子目录
+     * args[2]为原数据所在目录，即/MP_Data/task2/wuxia_novels
      */
     public static void main(String[] args) throws Exception {
         // 记录程序开始时间，用于计算总用时
@@ -34,6 +35,16 @@ public class LabelPropagation {
         String[] labelViewerInput = {args[1] + "/iteration_" + numIterations,
                 args[1] + "/sortByLabel"};
         LabelViewer.main(labelViewerInput);
+        // 调用FileConcatenator.main()方法，将LabelViewer的输出拼接为单个文件
+        String[] fileConcatenatorInput = {args[1] + "/sortByLabel",
+                args[1] + "/concatenatedFile"};
+        FileConcatenator.main(fileConcatenatorInput);
+        // 调用LabelNovelCounter.main()方法，获取tag和作品名之间的对应关系
+        String[] labelNovelCounterInput = {args[2], args[1] + "/concatenatedFile",
+                args[1] + "/labelToNovel"};
+        LabelNovelCounter.main(labelNovelCounterInput);
+        // 删除最终迭代的输出文件
+        hdfs.delete(new Path(args[1] + "/iteration_" + numIterations), true);
         // 计算总用时，在Driver端的终端输出总用时和迭代次数
         long endTime = System.currentTimeMillis();
         System.out.println("总用时：" + (endTime - startTime) / 1000 + "s");
