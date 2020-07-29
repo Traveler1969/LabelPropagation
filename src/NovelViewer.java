@@ -14,7 +14,7 @@ public class NovelViewer {
         Configuration conf = new Configuration();
         conf.set("mapreduce.output.textoutputformat.separator", " ");
         conf.set("mapreduce.input.keyvaluelinerecordreader.key.value.separator", " ");
-        Job job = Job.getInstance(conf, "inverse list build");
+        Job job = Job.getInstance(conf, "novel view");
         job.setJarByClass(NovelViewer.class);
         // 从命令行参数中获取LabelViewer输入路径、LabelNovelCounter输入路径、输出路径
         Path lvInputPath = new Path(args[0]);
